@@ -13,30 +13,29 @@ class BPETokenizer:
         self.pad_flag = pad_flag
         self.max_sent_len = max_sent_len
 
-        self.index2word = {0: "SOS", 1: "EOS", 2: "UNK", 3: "PAD", 4: " "}
-        self.word2index = {"SOS": 0, "EOS": 1, "UNK": 2, 'PAD': 3, " ": 4}
-        self.special_tokens = ["UNK", "PAD", "SOS", "EOS"]
+        self.special_tokens = ["UNK", "PAD", "SOS", "EOS", " "]
 
         self.tokenizer = Tokenizer(BPE(unk_token="UNK"))
         trainer = BpeTrainer(vocab_size=vocab_size,
                              special_tokens=self.special_tokens)
 
         self.tokenizer.pre_tokenizer = Whitespace()
-        self.tokenizer.train(sentence_list, trainer)
+
+        self.tokenizer.train_from_iterator(sentence_list, trainer=trainer)
 
         self.tokenizer.post_processor = TemplateProcessing(
             single="SOS $A EOS",
             pair="SOS $A EOS $B:1 EOS:1",
-            special_tokens=[("SOS", self.word2index['SOS']),
-                            ("EOS", self.word2index['EOS'])],
+            special_tokens=[("SOS", self.tokenizer.token_to_id("SOS")),
+                            ("EOS", self.tokenizer.token_to_id("EOS"))],
         )
 
     def pad_sent(self, token_ids_list):
         if len(token_ids_list) < self.max_sent_len:
-            padded_token_ids_list = token_ids_list + [self.tokenizer.token_to_id("[PAD]")] * (
+            padded_token_ids_list = token_ids_list + [self.tokenizer.token_to_id("PAD")] * (
                     self.max_sent_len - len(token_ids_list))
         else:
-            padded_token_ids_list = token_ids_list[:self.max_sent_len - 1] + [self.word2index['EOS']]
+            padded_token_ids_list = token_ids_list[:self.max_sent_len - 1] + [self.tokenizer.token_to_id("EOS")]
         return padded_token_ids_list
 
     def __call__(self, sentence):
@@ -63,5 +62,4 @@ class BPETokenizer:
 
 
 if __name__ == '__main__':
-
-    a = BPETokenizer()
+    pass

@@ -3,3 +3,5 @@ torch==2.0.0
 torchtext==0.15.1
 tqdm==4.64.1
 jupyter
+pyyaml~=6.0
+tokenizers~=0.13.3
