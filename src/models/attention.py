@@ -1,5 +1,6 @@
 import torch
 
+
 class Seq2seqAttention(torch.nn.Module):
     def __init__(self):
         super(Seq2seqAttention, self).__init__()
